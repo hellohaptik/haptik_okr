@@ -1,11 +1,11 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from haptik_okr.api.models import Team
+from api.models import Team
 
 
 class Sheet(models.Model):
-    team_id = models.ForeignKey(Team)
+    team_id = models.ForeignKey(Team, on_delete=models.PROTECT)
     quarter_name = models.CharField(max_length=100, null=False)
     quarter_start_date = models.DateField()
     quarter_end_date = models.DateField()
@@ -16,7 +16,7 @@ class Sheet(models.Model):
 
 class Objective(models.Model):
     title = models.CharField(max_length=500, null=False)
-    quarter_sheet = models.ForeignKey(Sheet)
+    quarter_sheet = models.ForeignKey(Sheet, on_delete=models.PROTECT)
     progress = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -24,7 +24,7 @@ class Objective(models.Model):
 
 class KeyResults(models.Model):
     title = models.CharField(max_length=500, null=False)
-    objective = models.ForeignKey(Objective)
+    objective = models.ForeignKey(Objective, on_delete=models.PROTECT)
     progress = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)

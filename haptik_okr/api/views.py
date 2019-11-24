@@ -26,7 +26,7 @@ class LoginView(generics.CreateAPIView):
         if user_obj is not None:
             return HttpResponse("User logged in")
         else:
-            return HttpResponse("No such user exists")
+            return HttpResponse("No such user exists, please sign up")
 
 
 class SignupView(generics.CreateAPIView):
@@ -41,6 +41,13 @@ class SignupView(generics.CreateAPIView):
                                                                                                  'password or email '
                                                                                                  'cannot be blank'}),
                                 content_type='json')
+
+        # validate if the user already exists in the system
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            return HttpResponse(
+                json.dumps({'status': False, 'error_code': 400, 'error_message': 'User already exists, please signup'}),
+                content_type='json')
 
         user_obj = User.objects.create_user(username=username.lower(), email=email.lower(), password=password)
         if user_obj is not None:

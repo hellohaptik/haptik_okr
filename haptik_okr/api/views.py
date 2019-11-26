@@ -1,8 +1,8 @@
 import json
 
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from api.utils import validate_request_parameters, authenticate_user
 
 # Create your views here.
 
@@ -15,18 +15,18 @@ class LoginView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
-        user_obj = authenticate(request, username=username, password=password)
 
-        # if username or password is empty throw error
-        if not username or not password:
-            return HttpResponse(json.dumps({'status': False, 'error_code': 400, 'error_message': 'Username or password '
-                                                                                                 'cannot be blank'}),
-                                content_type='json')
-
-        if user_obj is not None:
-            return HttpResponse("User logged in")
+        valid, response = validate_request_parameters(request, ['username', 'password'])
+        if valid:
+            authenticated = authenticate_user(request, username=username, password=password)
+            if authenticated:
+                response['message'] = "User logged in"
+            else:
+                response['success'] = False
+                response['message'] = "No such user exists, please sign up"
+            return HttpResponse(json.dumps(response), content_type='json')
         else:
-            return HttpResponse("No such user exists, please sign up")
+            return HttpResponse(json.dumps(response), content_type='json')
 
 
 class SignupView(generics.CreateAPIView):
@@ -36,22 +36,22 @@ class SignupView(generics.CreateAPIView):
         password = request.data.get("password", "")
         email = request.data.get("email", "")
 
-        if not username or not password or not email:
-            return HttpResponse(json.dumps({'status': False, 'error_code': 400, 'error_message': 'Username or '
-                                                                                                 'password or email '
-                                                                                                 'cannot be blank'}),
-                                content_type='json')
+        valid, response = validate_request_parameters(request, ['username', 'password', 'email'])
+        if valid:
+            # validate if the user already exists in the system
+            if authenticate_user(request, username, password):
+                response['success'] = False
+                response['message'] = "User already exists, please sign up"
+                return HttpResponse(json.dumps(response), content_type='json')
 
-        # validate if the user already exists in the system
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            return HttpResponse(
-                json.dumps({'status': False, 'error_code': 400, 'error_message': 'User already exists, please signup'}),
-                content_type='json')
-
-        user_obj = User.objects.create_user(username=username.lower(), email=email.lower(), password=password)
-        if user_obj is not None:
-            user_obj.save()
-            return HttpResponse("User created successfully")
+            try:
+                user_obj = User.objects.create_user(username=username.lower(), email=email.lower(), password=password)
+                if user_obj is not None:
+                    user_obj.save()
+                    response['message'] = "User created successfully"
+            except:
+                response['success'] = False
+                response['message'] = "Failed to create user"
+            return HttpResponse(json.dumps(response), content_type='json')
         else:
-            return HttpResponse("Failed to create user")
+            return HttpResponse(json.dumps(response), content_type='json')

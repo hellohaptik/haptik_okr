@@ -35,6 +35,7 @@ class SignupView(generics.CreateAPIView):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
+        # TODO: 30/11/2019 Rajas add email validation here
 
         valid, response = validate_request_parameters(request, ['username', 'password', 'email'])
         if valid:

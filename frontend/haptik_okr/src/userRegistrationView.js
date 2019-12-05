@@ -20,28 +20,32 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 3),
+    margin: theme.spacing(3, 0, 1),
   },
   parent: {
     backgroundColor: 'white',
   }
 }));
 
-export default function SignIn() {
+export default function UserRegistrationView() {
   const classes = useStyles();
 
+  function handleSubmit(event) {
+    alert('A name was submitted: ' );
+    event.preventDefault();
+  }
   return (
     <Container component="main" maxWidth="xs" borderRadius={16} className={classes.parent}>
       <CssBaseline />
       <div className={classes.paper}>
-        <form className={classes.form}>
+        <form className={classes.form} onSubmit={handleSubmit} >
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -57,6 +61,16 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Confirm Password"
+            type="password"
+            id="confirm_password"
+          />
           <Grid
             container
             justify="center"
@@ -69,20 +83,13 @@ export default function SignIn() {
               color="primary"
               className={classes.submit}
             >
-              Sign In
+              Register
             </Button>
-
-            <Link href="#"
-              underline="always"
-            >
-              {"Forgot password?"}
-            </Link>
-
             <Link href="#"
               underline="always"
               className={classes.submit}
             >
-              {"Don't have an account? Sign Up"}
+              {"Already have an account? Login"}
             </Link>
           </Grid>
         </form>

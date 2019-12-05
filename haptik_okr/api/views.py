@@ -30,11 +30,13 @@ class LoginView(generics.CreateAPIView):
 
 
 class SignupView(generics.CreateAPIView):
+    # Return token in response
 
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
         email = request.data.get("email", "")
+        # TODO: 30/11/2019 Rajas add email validation here
 
         valid, response = validate_request_parameters(request, ['username', 'password', 'email'])
         if valid:

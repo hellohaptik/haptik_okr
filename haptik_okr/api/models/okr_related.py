@@ -8,7 +8,7 @@ class Quarter(models.Model):
     quarter_name = models.CharField(max_length=100, null=False)
     quarter_start_date = models.DateField()
     quarter_end_date = models.DateField()
-    is_current = models.BooleanField
+    is_current = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 

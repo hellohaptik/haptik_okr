@@ -42,6 +42,7 @@ class QuarterView(APIView):
                 elif str.lower(is_current) == 'false':
                     quarter_list = Quarter.objects.filter(is_current=False)
             else:
+                # TODO: properly formatted error will be sent in subsequent PRs
                 return HttpResponse("Invalid request")
         else:
             quarter_list = Quarter.objects.all()

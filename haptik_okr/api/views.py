@@ -30,6 +30,7 @@ class LoginView(generics.CreateAPIView):
 
 
 class SignupView(generics.CreateAPIView):
+    # Return token in response
 
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")

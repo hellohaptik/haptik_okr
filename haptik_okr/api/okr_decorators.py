@@ -14,6 +14,7 @@ def send_api_response(method):
         except APIError as e:
             api_response.success = False
             api_response.body = e.message
+            api_response.status_code = e.status
         return api_response.toHttpResponse()
 
     return wrapper

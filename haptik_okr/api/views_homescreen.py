@@ -28,18 +28,24 @@ def get_all_or_current_quarter(request):
     quarter_list = []
     request_params = request.query_params.dict()
     if len(request_params) > 0:
-        if request_params.get('is_current') is not None:
-            is_current = request_params.get('is_current')
-            if str.lower(is_current) == 'true':
-                quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
-            elif str.lower(is_current) == 'false':
-                quarter_list = Quarter.objects.filter(is_current=False)
-        elif request_params.get('all') is not None:
-            all_quarters = request_params.get('all')
-            if str.lower(all_quarters) == 'true':
-                quarter_list = Quarter.objects.all()
-        else:
+        try:
+            if request_params.get('is_current') is not None:
+                try:
+                    is_current = int(request_params.get('is_current'))
+                    if is_current == 1:
+                        quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
+                    elif is_current == 0:
+                        quarter_list = Quarter.objects.filter(is_current=False)
+                except ValueError as e:
+                    raise APIError(message='Invalid Request', status=400)
+            elif request_params.get('all') is not None:
+                all_quarters = int(request_params.get('all'))
+                if all_quarters == 1:
+                    quarter_list = Quarter.objects.all()
+        except ValueError as e:
             raise APIError(message='Invalid Request', status=400)
+    else:
+        raise APIError(message='Invalid Request', status=400)
 
     return populate_quarter_data(quarter_list)
 

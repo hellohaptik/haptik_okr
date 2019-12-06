@@ -1,7 +1,4 @@
-import json
-from django.http import HttpResponse
-from django.utils.decorators import method_decorator
-from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from api.models.okr_related import Quarter
 from api.okr_decorators import send_api_response
 from api.exceptions import APIError
@@ -10,17 +7,7 @@ import datetime
 
 def populate_quarter_data(quarter_list):
     all_quarter_data = []
-    if len(quarter_list) == 1:
-        data = {
-            'id': quarter_list[0].id,
-            'name': quarter_list[0].quarter_name,
-            'quarter_start_date': quarter_list[0].quarter_start_date.strftime('%m/%d/%Y'),
-            'quarter_end_date': quarter_list[0].quarter_end_date.strftime('%m/%d/%Y'),
-            'is_current': quarter_list[0].is_current
-        }
-
-        return data
-
+    response = {'quarters': None}
     for quarter in quarter_list:
         if quarter.quarter_start_date < datetime.date.today():
             data = {
@@ -31,25 +18,43 @@ def populate_quarter_data(quarter_list):
                 'is_current': quarter.is_current
             }
             all_quarter_data.append(data)
-    return all_quarter_data
+            response['quarters'] = all_quarter_data
+    return response
 
 
-class QuarterView(APIView):
-
-    @method_decorator(send_api_response)
-    def get(self, request):
-        quarter_list = []
-        request_params = request.query_params.dict()
-        if len(request_params) > 0:
-            if request_params.get('is_current') is not None:
-                is_current = request_params.get('is_current')
-                if str.lower(is_current) == 'true':
-                    quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
-                elif str.lower(is_current) == 'false':
-                    quarter_list = Quarter.objects.filter(is_current=False)
-            else:
-                raise APIError(message='Invalid Request', status=400)
+@api_view()
+@send_api_response
+def get_all_or_current_quarter(request):
+    quarter_list = []
+    request_params = request.query_params.dict()
+    if len(request_params) > 0:
+        if request_params.get('is_current') is not None:
+            is_current = request_params.get('is_current')
+            if str.lower(is_current) == 'true':
+                quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
+            elif str.lower(is_current) == 'false':
+                quarter_list = Quarter.objects.filter(is_current=False)
+        elif request_params.get('all') is not None:
+            all_quarters = request_params.get('all')
+            if str.lower(all_quarters) == 'true':
+                quarter_list = Quarter.objects.all()
         else:
-            quarter_list = Quarter.objects.all()
+            raise APIError(message='Invalid Request', status=400)
 
-        return populate_quarter_data(quarter_list)
+    return populate_quarter_data(quarter_list)
+
+
+@api_view()
+@send_api_response
+def get_quarter_by_id(request, quarter_id):
+    print(quarter_id)
+    try:
+        q_id = int(quarter_id)
+        if q_id < 0:
+            raise APIError(message='Invalid Id', status=400)
+        else:
+            quarter_list = Quarter.objects.filter(id=q_id)
+            return populate_quarter_data(quarter_list)
+
+    except ValueError as e:
+        raise APIError(message='Quarter id should be an integer', status=400)

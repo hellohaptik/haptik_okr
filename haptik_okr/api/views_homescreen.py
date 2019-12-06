@@ -1,7 +1,11 @@
 import json
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from api.models.okr_related import Quarter
+from api.okr_decorators import send_api_response
+from api.exceptions import APIError
+import datetime
 
 
 def populate_quarter_data(quarter_list):
@@ -18,19 +22,21 @@ def populate_quarter_data(quarter_list):
         return data
 
     for quarter in quarter_list:
-        data = {
-            'id': quarter.id,
-            'name': quarter.quarter_name,
-            'quarter_start_date': quarter.quarter_start_date.strftime('%d/%m/%Y'),
-            'quarter_end_date': quarter.quarter_end_date.strftime('%d/%m/%Y'),
-            'is_current': quarter.is_current
-        }
-        all_quarter_data.append(data)
+        if quarter.quarter_start_date < datetime.date.today():
+            data = {
+                'id': quarter.id,
+                'name': quarter.quarter_name,
+                'quarter_start_date': quarter.quarter_start_date.strftime('%d/%m/%Y'),
+                'quarter_end_date': quarter.quarter_end_date.strftime('%d/%m/%Y'),
+                'is_current': quarter.is_current
+            }
+            all_quarter_data.append(data)
     return all_quarter_data
 
 
 class QuarterView(APIView):
 
+    @method_decorator(send_api_response)
     def get(self, request):
         quarter_list = []
         request_params = request.query_params.dict()
@@ -42,9 +48,8 @@ class QuarterView(APIView):
                 elif str.lower(is_current) == 'false':
                     quarter_list = Quarter.objects.filter(is_current=False)
             else:
-                # TODO: properly formatted error will be sent in subsequent PRs
-                return HttpResponse("Invalid request")
+                raise APIError(message='Invalid Request', status=400)
         else:
             quarter_list = Quarter.objects.all()
 
-        return HttpResponse(json.dumps(populate_quarter_data(quarter_list)))
+        return populate_quarter_data(quarter_list)

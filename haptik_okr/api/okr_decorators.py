@@ -13,7 +13,7 @@ def send_api_response(method):
             api_response.body = method(request, *args, **kwargs)
         except APIError as e:
             api_response.success = False
-            api_response.body = e.message
+            api_response.error = e.message
             api_response.status_code = e.status
         return api_response.toHttpResponse()
 

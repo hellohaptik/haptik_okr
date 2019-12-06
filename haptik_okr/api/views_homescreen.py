@@ -35,6 +35,8 @@ def get_all_or_current_quarter(request):
                     quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
                 elif is_current == 0:
                     quarter_list = Quarter.objects.filter(is_current=False)
+                else:
+                    raise APIError(message='Invalid Request', status=400)
             else:
                 raise APIError(message='Invalid Request', status=400)
         except ValueError as e:

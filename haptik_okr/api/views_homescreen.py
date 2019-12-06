@@ -18,7 +18,7 @@ def populate_quarter_data(quarter_list):
                 'is_current': quarter.is_current
             }
             all_quarter_data.append(data)
-            response['quarters'] = all_quarter_data
+    response['quarters'] = all_quarter_data
     return response
 
 
@@ -30,22 +30,15 @@ def get_all_or_current_quarter(request):
     if len(request_params) > 0:
         try:
             if request_params.get('is_current') is not None:
-                try:
-                    is_current = int(request_params.get('is_current'))
-                    if is_current == 1:
-                        quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
-                    elif is_current == 0:
-                        quarter_list = Quarter.objects.filter(is_current=False)
-                except ValueError as e:
-                    raise APIError(message='Invalid Request', status=400)
-            elif request_params.get('all') is not None:
-                all_quarters = int(request_params.get('all'))
-                if all_quarters == 1:
-                    quarter_list = Quarter.objects.all()
+                is_current = int(request_params.get('is_current'))
+                if is_current == 1:
+                    quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
+                elif is_current == 0:
+                    quarter_list = Quarter.objects.filter(is_current=False)
         except ValueError as e:
             raise APIError(message='Invalid Request', status=400)
     else:
-        raise APIError(message='Invalid Request', status=400)
+        quarter_list = Quarter.objects.all()
 
     return populate_quarter_data(quarter_list)
 
@@ -53,7 +46,6 @@ def get_all_or_current_quarter(request):
 @api_view()
 @send_api_response
 def get_quarter_by_id(request, quarter_id):
-    print(quarter_id)
     try:
         q_id = int(quarter_id)
         if q_id < 0:

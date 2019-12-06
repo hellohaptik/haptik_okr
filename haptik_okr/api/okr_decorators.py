@@ -6,7 +6,6 @@ from django.http import HttpResponse
 
 
 def send_api_response(method):
-    @wraps(method)
     def wrapper(request, *args, **kwargs):
         api_response = ApiResponse()
         try:

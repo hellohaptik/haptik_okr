@@ -21,13 +21,13 @@ class LoginView(generics.CreateAPIView):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
         api_response = {'user': None, 'token': ''}
-        data = {'email': None}
+        data = {'username': None}
 
         valid, response = validate_request_parameters(request, ['username', 'password'])
         if valid:
             authenticated, user_obj = authenticate_user(request, username=username, password=password)
             if authenticated:
-                data['email'] = user_obj.email
+                data['username'] = user_obj.username
                 api_response['user'] = data
                 return api_response
             else:
@@ -39,28 +39,27 @@ class LoginView(generics.CreateAPIView):
 class SignupView(generics.CreateAPIView):
     # Return token in response
 
+    @send_api_response
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
-        email = request.data.get("email", "")
+        api_response = {'user': None, 'token': ''}
+        data = {'username': None}
         # TODO: 30/11/2019 Rajas add email validation here
-
-        valid, response = validate_request_parameters(request, ['username', 'password', 'email'])
+        valid, response = validate_request_parameters(request, ['username', 'password'])
         if valid:
             # validate if the user already exists in the system
-            if authenticate_user(request, username, password):
-                response['success'] = False
-                response['message'] = "User already exists, please sign up"
-                return HttpResponse(json.dumps(response), content_type='json')
-
+            user_exists, user = authenticate_user(request, username, password)
+            if user_exists:
+                raise APIError(message="User already exists, please sign up", status=400)
             try:
-                user_obj = User.objects.create_user(username=username.lower(), email=email.lower(), password=password)
+                user_obj = User.objects.create_user(username=username.lower(), password=password)
                 if user_obj is not None:
                     user_obj.save()
-                    response['message'] = "User created successfully"
+                    data['username'] = user_obj.username
+                    api_response['user'] = data
+                    return api_response
             except:
-                response['success'] = False
-                response['message'] = "Failed to create user"
-            return HttpResponse(json.dumps(response), content_type='json')
+                raise APIError(message="Failed to create user", status=500)
         else:
-            return HttpResponse(json.dumps(response), content_type='json')
+            raise APIError(message=response, status=400)

@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view
-from api.models.okr_related import Quarter
+from api.models.okr_related import Quarter, Sheet, Team
 from api.okr_decorators import send_api_response
 from api.exceptions import APIError
 import datetime
@@ -60,3 +60,26 @@ def get_quarter_by_id(request, quarter_id):
 
     except ValueError as e:
         raise APIError(message='Quarter id should be an integer', status=400)
+
+
+@api_view()
+@send_api_response
+def get_team_list_for_quarter_id(request, quarter_id):
+    response = {'teams_progress': None}
+    teams_progress = []
+    try:
+        q_id = int(quarter_id)
+        sheet_list = Sheet.objects.filter(quarter_id_id=q_id)
+        teams = Team.objects.all()
+        for sheet in sheet_list:
+            team = teams.filter(id=sheet.team_id.id)[0]
+            data = {
+                'sheet_id': sheet.id,
+                'team_name': team.name,
+                'team_progress': sheet.progress
+            }
+            teams_progress.append(data)
+        response['teams_progress'] = teams_progress
+        return response
+    except ValueError as e:
+        raise APIError(message="Invalid quarter id", status=400)

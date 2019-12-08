@@ -6,11 +6,13 @@ from django.http import HttpResponse
 
 def validate_request_parameters(request, list_of_required_params):
     valid = True
-    error_string = ''
+    missing_params = []
     for required_param in list_of_required_params:
         if not request.data.get(required_param, ""):
-            error_string = ", ".join(required_param + " is missing")
-            valid = False
+            missing_params.append(required_param + " is missing")
+    error_string = ", ".join(missing_params)
+    if len(error_string) > 0:
+        valid = False
     return valid, error_string
 
 

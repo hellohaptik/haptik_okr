@@ -1,37 +1,22 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-
-const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(16),
-    display: 'flex',
-    padding:'10px',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 3),
-  },
-  parent: {
-    backgroundColor: 'white',
-  }
-}));
+import React from "react";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
+import { preLoginStyles } from "./styles.js";
+import Container from "@material-ui/core/Container";
 
 export default function UserLoginView() {
-  const classes = useStyles();
+  const classes = preLoginStyles();
 
   return (
-    <Container component="main" maxWidth="xs" borderRadius={16} className={classes.parent}>
+    <Container
+      component="main"
+      maxWidth="xs"
+      borderRadius={16}
+      className={classes.parent}
+    >
       <CssBaseline />
       <div className={classes.paper}>
         <form className={classes.form}>
@@ -61,7 +46,8 @@ export default function UserLoginView() {
             container
             justify="center"
             direction="column"
-            alignItems="center">
+            alignItems="center"
+          >
             <Button
               type="submit"
               variant="contained"
@@ -72,13 +58,12 @@ export default function UserLoginView() {
               Sign In
             </Button>
 
-            <Link href="#"
-              underline="always"
-            >
+            <Link href="#" underline="always">
               {"Forgot password?"}
             </Link>
 
-            <Link href="/registration"
+            <Link
+              href="/registration"
               underline="always"
               className={classes.submit}
             >

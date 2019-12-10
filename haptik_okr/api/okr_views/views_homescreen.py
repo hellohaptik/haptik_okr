@@ -1,8 +1,9 @@
 from rest_framework.decorators import api_view
-from api.models.okr_related import Quarter
+from api.models.okr_related import Quarter, Sheet, Team
 from api.okr_decorators import send_api_response
 from api.exceptions import APIError
 import datetime
+import api.constants
 
 
 def populate_quarter_data(quarter_list):
@@ -35,8 +36,12 @@ def get_all_or_current_quarter(request):
                     quarter_list = Quarter.objects.filter(is_current=True).order_by('quarter_start_date')
                 elif is_current == 0:
                     quarter_list = Quarter.objects.filter(is_current=False)
+                else:
+                    raise APIError(message=api.constants.INVALID_REQUEST, status=400)
+            else:
+                raise APIError(message=api.constants.INVALID_REQUEST, status=400)
         except ValueError as e:
-            raise APIError(message='Invalid Request', status=400)
+            raise APIError(message=api.constants.INVALID_REQUEST, status=400)
     else:
         quarter_list = Quarter.objects.all()
 
@@ -56,3 +61,24 @@ def get_quarter_by_id(request, quarter_id):
 
     except ValueError as e:
         raise APIError(message='Quarter id should be an integer', status=400)
+
+
+@api_view()
+@send_api_response
+def get_team_list_for_quarter_id(request, quarter_id):
+    response = {'teams_progress': None}
+    teams_progress = []
+    try:
+        q_id = int(quarter_id)
+        sheet_list = Sheet.objects.filter(quarter_id_id=q_id).select_related('team_id')
+        for sheet in sheet_list:
+            data = {
+                'sheet_id': sheet.id,
+                'team_name': sheet.team_id.name,
+                'team_progress': sheet.progress
+            }
+            teams_progress.append(data)
+        response['teams_progress'] = teams_progress
+        return response
+    except ValueError as e:
+        raise APIError(message="Invalid quarter id", status=400)

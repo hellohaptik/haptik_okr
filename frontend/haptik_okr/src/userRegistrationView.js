@@ -85,7 +85,7 @@ export default function UserRegistrationView() {
             >
               Register
             </Button>
-            <Link href="#"
+            <Link href="/"
               underline="always"
               className={classes.submit}
             >

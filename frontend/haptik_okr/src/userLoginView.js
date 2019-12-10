@@ -78,7 +78,7 @@ export default function UserLoginView() {
               {"Forgot password?"}
             </Link>
 
-            <Link href="#"
+            <Link href="/registration"
               underline="always"
               className={classes.submit}
             >

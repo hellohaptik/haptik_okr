@@ -1,17 +1,13 @@
-import React from "react";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
 import { preLoginStyles } from "./styles.js";
-import Container from "@material-ui/core/Container";
-
+import React from "react";
+import Link from "@material-ui/core/Link";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import { Container, TextField, Grid, Button } from "@material-ui/core";
 
-export default function UserLoginView() {
+export default function ForgotPasswordView() {
   const classes = preLoginStyles();
 
   return (
@@ -27,7 +23,7 @@ export default function UserLoginView() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign In
+          Reset Password
         </Typography>
         <form className={classes.form}>
           <TextField
@@ -41,21 +37,10 @@ export default function UserLoginView() {
             autoComplete="email"
             autoFocus
           />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
           <Grid
             container
-            justify="center"
             direction="column"
+            justify="center"
             alignItems="center"
           >
             <Button
@@ -64,20 +49,12 @@ export default function UserLoginView() {
               size="large"
               color="primary"
               className={classes.submit}
+              disabled
             >
-              Sign In
+              Send Verification email
             </Button>
-
-            <Link href="/forgotpassword" underline="always">
-              {"Forgot password?"}
-            </Link>
-
-            <Link
-              href="/registration"
-              underline="always"
-              className={classes.submit}
-            >
-              {"Don't have an account? Sign Up"}
+            <Link href="/" underline="always" className={classes.submit}>
+              {"Go back to Login"}
             </Link>
           </Grid>
         </form>

@@ -6,6 +6,9 @@ import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import { preLoginStyles } from "./styles.js";
 import Container from "@material-ui/core/Container";
+import Avatar from "@material-ui/core/Avatar";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
 
 export default function UserRegistrationView() {
   const classes = preLoginStyles();
@@ -23,7 +26,38 @@ export default function UserRegistrationView() {
     >
       <CssBaseline />
       <div className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Register
+        </Typography>
         <form className={classes.form} onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="firstName"
+                variant="outlined"
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                name="lastName"
+                autoComplete="lname"
+              />
+            </Grid>
+          </Grid>
           <TextField
             variant="outlined"
             margin="normal"
@@ -33,7 +67,6 @@ export default function UserRegistrationView() {
             label="Email"
             name="email"
             autoComplete="email"
-            autoFocus
           />
           <TextField
             variant="outlined"

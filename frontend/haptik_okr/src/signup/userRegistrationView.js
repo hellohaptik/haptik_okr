@@ -1,44 +1,29 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-
-const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(16),
-    display: 'flex',
-    padding:'10px',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  form: {
-    width: '100%',
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 1),
-  },
-  parent: {
-    backgroundColor: 'white',
-  }
-}));
+import React from "react";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
+import { preLoginStyles } from "./styles.js";
+import Container from "@material-ui/core/Container";
 
 export default function UserRegistrationView() {
-  const classes = useStyles();
+  const classes = preLoginStyles();
 
   function handleSubmit(event) {
-    alert('A name was submitted: ' );
+    alert("A name was submitted: ");
     event.preventDefault();
   }
   return (
-    <Container component="main" maxWidth="xs" borderRadius={16} className={classes.parent}>
+    <Container
+      component="main"
+      maxWidth="xs"
+      borderRadius={16}
+      className={classes.parent}
+    >
       <CssBaseline />
       <div className={classes.paper}>
-        <form className={classes.form} onSubmit={handleSubmit} >
+        <form className={classes.form} onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -75,7 +60,8 @@ export default function UserRegistrationView() {
             container
             justify="center"
             direction="column"
-            alignItems="center">
+            alignItems="center"
+          >
             <Button
               type="submit"
               variant="contained"
@@ -85,10 +71,7 @@ export default function UserRegistrationView() {
             >
               Register
             </Button>
-            <Link href="/"
-              underline="always"
-              className={classes.submit}
-            >
+            <Link href="/" underline="always" className={classes.submit}>
               {"Already have an account? Login"}
             </Link>
           </Grid>

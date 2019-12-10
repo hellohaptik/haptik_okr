@@ -3,6 +3,7 @@ from api.models.okr_related import Quarter, Sheet, Team
 from api.okr_decorators import send_api_response
 from api.exceptions import APIError
 import datetime
+import api.constants
 
 
 def populate_quarter_data(quarter_list):
@@ -36,11 +37,11 @@ def get_all_or_current_quarter(request):
                 elif is_current == 0:
                     quarter_list = Quarter.objects.filter(is_current=False)
                 else:
-                    raise APIError(message='Invalid Request', status=400)
+                    raise APIError(message=api.constants.INVALID_REQUEST, status=400)
             else:
-                raise APIError(message='Invalid Request', status=400)
+                raise APIError(message=api.constants.INVALID_REQUEST, status=400)
         except ValueError as e:
-            raise APIError(message='Invalid Request', status=400)
+            raise APIError(message=api.constants.INVALID_REQUEST, status=400)
     else:
         quarter_list = Quarter.objects.all()
 
@@ -69,13 +70,11 @@ def get_team_list_for_quarter_id(request, quarter_id):
     teams_progress = []
     try:
         q_id = int(quarter_id)
-        sheet_list = Sheet.objects.filter(quarter_id_id=q_id)
-        teams = Team.objects.all()
+        sheet_list = Sheet.objects.filter(quarter_id_id=q_id).select_related('team_id')
         for sheet in sheet_list:
-            team = teams.filter(id=sheet.team_id.id)[0]
             data = {
                 'sheet_id': sheet.id,
-                'team_name': team.name,
+                'team_name': sheet.team_id.name,
                 'team_progress': sheet.progress
             }
             teams_progress.append(data)

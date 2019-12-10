@@ -51,7 +51,7 @@ class SignupView(generics.CreateAPIView):
             # validate if the user already exists in the system
             user_exists, user = authenticate_user(request, username, password)
             if user_exists:
-                raise APIError(message="User already exists, please sign up", status=400)
+                raise APIError(message="User already exists, please login", status=400)
             try:
                 user_obj = User.objects.create_user(username=username.lower(), password=password)
                 if user_obj is not None:

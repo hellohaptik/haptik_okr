@@ -1,8 +1,8 @@
 from django.conf.urls import url
-from django.urls import path, include
+from django.urls import include
 
 from api.views import LoginView, SignupView
-from api.views_homescreen import get_all_or_current_quarter, get_quarter_by_id, get_team_list_for_quarter_id
+from api.okr_views.views_homescreen import get_all_or_current_quarter, get_quarter_by_id, get_team_list_for_quarter_id
 
 home_screen_urls = [
     url(r'^quarter/(?P<quarter_id>[0-9]+)/$', get_quarter_by_id),

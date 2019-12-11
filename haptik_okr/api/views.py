@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+# Create your views here.
+from api.constants import RESET_PASSWORD_TOKEN_EXPIRY_IN_MINS
 from api.exceptions import APIError
 from api.models.user_related import RenewPasswordToken
 from api.okr_decorators import send_api_response
@@ -8,9 +10,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from rest_framework import generics
-
-
-# Create your views here.
 
 
 class LoginView(generics.CreateAPIView):
@@ -75,7 +74,7 @@ class ForgotPasswordView(generics.CreateAPIView):
             user = User.objects.get(username=username)
             if user:
                 random_token = generate_random_string_token(10)
-                token_expiry_time = (datetime.now() + timedelta(minutes=10))
+                token_expiry_time = (datetime.now() + timedelta(minutes=RESET_PASSWORD_TOKEN_EXPIRY_IN_MINS))
                 current_token = RenewPasswordToken.objects.filter(user=user)
                 if current_token.count() > 0:
                     current_token = current_token[0]
@@ -111,6 +110,7 @@ class ResetForgottonPasswordView(generics.CreateAPIView):
                         user = current_token.user
                         user.set_password(new_password)
                         user.save()
+                        current_token.delete()
                         return 'New password set successfully'
                     else:
                         raise APIError(message="Token is expired", status=200)

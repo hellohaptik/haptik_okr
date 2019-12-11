@@ -11,12 +11,7 @@ function LoginView() {
   const classes = preLoginStyles();
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      borderRadius={16}
-      className={classes.parent}
-    >
+    <Container component="main" maxWidth="xs" className={classes.parent}>
       <CssBaseline />
       <div className={classes.paper}>
         <form className={classes.form}>

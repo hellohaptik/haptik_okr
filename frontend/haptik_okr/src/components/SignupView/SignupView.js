@@ -15,12 +15,7 @@ function SignupView() {
     event.preventDefault();
   }
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      borderRadius={16}
-      className={classes.parent}
-    >
+    <Container component="main" maxWidth="xs" className={classes.parent}>
       <CssBaseline />
       <div className={classes.paper}>
         <form className={classes.form} onSubmit={handleSubmit}>

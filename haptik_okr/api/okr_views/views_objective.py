@@ -8,6 +8,7 @@ from api.utils import validate_request_parameters
 from api.exceptions import APIError
 from api.okr_decorators import send_api_response
 import api.constants
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class ObjectiveView(APIView):
@@ -23,7 +24,6 @@ class ObjectiveView(APIView):
             try:
                 sheet_id = int(request_body.get('sheet_id'))
                 title = str(request_body.get('title'))
-
                 sheet = Sheet.objects.get(pk=sheet_id)
                 objective = Objective.objects.create(title=title, quarter_sheet=sheet, progress=0)
                 data = {
@@ -34,7 +34,7 @@ class ObjectiveView(APIView):
                 }
                 api_response['objective'] = data
                 return api_response
-            except ValueError as e:
+            except (ValueError, ObjectDoesNotExist) as e:
                 raise APIError(message=api.constants.INVALID_REQUEST, status=400)
         else:
             raise APIError(message=response, status=400)

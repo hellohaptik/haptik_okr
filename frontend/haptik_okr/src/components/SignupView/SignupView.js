@@ -4,29 +4,28 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
-import { preLoginStyles } from "./styles.js";
+import { preLoginStyles } from "../styles.js";
 import Container from "@material-ui/core/Container";
 
-export default function UserLoginView() {
+function SignupView() {
   const classes = preLoginStyles();
 
+  function handleSubmit(event) {
+    alert("A name was submitted: ");
+    event.preventDefault();
+  }
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      borderRadius={16}
-      className={classes.parent}
-    >
+    <Container component="main" maxWidth="xs" className={classes.parent}>
       <CssBaseline />
       <div className={classes.paper}>
-        <form className={classes.form}>
+        <form className={classes.form} onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -42,6 +41,16 @@ export default function UserLoginView() {
             id="password"
             autoComplete="current-password"
           />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Confirm Password"
+            type="password"
+            id="confirm_password"
+          />
           <Grid
             container
             justify="center"
@@ -55,19 +64,10 @@ export default function UserLoginView() {
               color="primary"
               className={classes.submit}
             >
-              Sign In
+              Register
             </Button>
-
-            <Link href="#" underline="always">
-              {"Forgot password?"}
-            </Link>
-
-            <Link
-              href="/registration"
-              underline="always"
-              className={classes.submit}
-            >
-              {"Don't have an account? Sign Up"}
+            <Link href="/" underline="always" className={classes.submit}>
+              {"Already have an account? Login"}
             </Link>
           </Grid>
         </form>
@@ -75,3 +75,5 @@ export default function UserLoginView() {
     </Container>
   );
 }
+
+export default SignupView;

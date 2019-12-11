@@ -5,6 +5,7 @@ from api.models.user_related import RenewPasswordToken
 from api.okr_decorators import send_api_response
 from api.utils import validate_request_parameters, authenticate_user, generate_random_string_token
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from rest_framework import generics
 
@@ -85,6 +86,36 @@ class ForgotPasswordView(generics.CreateAPIView):
                 current_token.save()
                 # Make a call to Mailer Service by sending the random_token as email
                 return 'Reset Token Will be sent on following email %s' % user.username
+            else:
+                raise APIError(message="User does not exist", status=200)
+        else:
+            raise APIError(message=response, status=400)
+
+
+class ResetForgottonPasswordView(generics.CreateAPIView):
+
+    @method_decorator(send_api_response)
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username", "")
+        new_password = request.data.get("password", "")
+        reset_token = request.data.get("reset_token", "")
+        valid, response = validate_request_parameters(request, ['username', 'password', 'reset_token'])
+        if valid:
+            # validate if the user already exists in the system
+            user = User.objects.get(username=username)
+            if user:
+                current_token = RenewPasswordToken.objects.filter(user=user)
+                if current_token.count() > 0 and current_token[0].token == reset_token:
+                    current_token = current_token[0]
+                    if current_token.expiry > timezone.now():
+                        user = current_token.user
+                        user.set_password(new_password)
+                        user.save()
+                        return 'New password set successfully'
+                    else:
+                        raise APIError(message="Token is expired", status=200)
+                else:
+                    raise APIError(message="Incorrect Token sent", status=200)
             else:
                 raise APIError(message="User does not exist", status=200)
         else:

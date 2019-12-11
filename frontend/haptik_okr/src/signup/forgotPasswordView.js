@@ -1,5 +1,5 @@
 import { preLoginStyles } from "./styles.js";
-import React from "react";
+import React, { useState } from "react";
 import Link from "@material-ui/core/Link";
 import Avatar from "@material-ui/core/Avatar";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -9,6 +9,12 @@ import { Container, TextField, Grid, Button } from "@material-ui/core";
 
 export default function ForgotPasswordView() {
   const classes = preLoginStyles();
+
+  const [isUsernameEmpty, setUsernameEmpty] = useState(true);
+
+  function usernameChanged(event) {
+    setUsernameEmpty(event.target.value.length === 0);
+  }
 
   return (
     <Container
@@ -22,8 +28,12 @@ export default function ForgotPasswordView() {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" gutterBottom>
           Reset Password
+        </Typography>
+        <Typography variant="body2">
+          Please provide the email address that you and we will send you an
+          email that will allow you to reset your password
         </Typography>
         <form className={classes.form}>
           <TextField
@@ -32,10 +42,11 @@ export default function ForgotPasswordView() {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Username"
             name="email"
             autoComplete="email"
             autoFocus
+            onChange={usernameChanged}
           />
           <Grid
             container
@@ -49,7 +60,7 @@ export default function ForgotPasswordView() {
               size="large"
               color="primary"
               className={classes.submit}
-              disabled
+              disabled={isUsernameEmpty}
             >
               Send Verification email
             </Button>

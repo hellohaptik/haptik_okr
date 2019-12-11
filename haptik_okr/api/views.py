@@ -1,17 +1,15 @@
-import json
+from datetime import datetime, timedelta
 
+from api.exceptions import APIError
+from api.models.user_related import RenewPasswordToken
+from api.okr_decorators import send_api_response
+from api.utils import validate_request_parameters, authenticate_user, generate_random_string_token
 from django.contrib.auth.models import User
-from django.shortcuts import render
 from django.utils.decorators import method_decorator
+from rest_framework import generics
 
-from api.utils import validate_request_parameters, authenticate_user
 
 # Create your views here.
-
-from django.http import HttpResponse
-from rest_framework import generics
-from api.exceptions import APIError
-from api.okr_decorators import send_api_response
 
 
 class LoginView(generics.CreateAPIView):
@@ -61,5 +59,33 @@ class SignupView(generics.CreateAPIView):
                     return api_response
             except:
                 raise APIError(message="Failed to create user", status=500)
+        else:
+            raise APIError(message=response, status=400)
+
+
+class ForgotPasswordView(generics.CreateAPIView):
+
+    @method_decorator(send_api_response)
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username", "")
+        valid, response = validate_request_parameters(request, ['username'])
+        if valid:
+            # validate if the user already exists in the system
+            user = User.objects.get(username=username)
+            if user:
+                random_token = generate_random_string_token(10)
+                token_expiry_time = (datetime.now() + timedelta(minutes=10))
+                current_token = RenewPasswordToken.objects.filter(user=user)
+                if current_token.count() > 0:
+                    current_token = current_token[0]
+                    current_token.token = random_token
+                    current_token.expiry = token_expiry_time
+                else:
+                    current_token = RenewPasswordToken(token=random_token, user=user, expiry=token_expiry_time)
+                current_token.save()
+                # Make a call to Mailer Service by sending the random_token as email
+                return 'Reset Token Will be sent on following email %s' % user.username
+            else:
+                raise APIError(message="User does not exist", status=200)
         else:
             raise APIError(message=response, status=400)

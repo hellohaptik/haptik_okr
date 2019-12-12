@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import LoginView from "./components/LoginView";
-import SignupView from "./components/SignupView";
+import LoginView from "./containers/LoginView";
+import SignupView from "./containers/SignupView";
 import * as serviceWorker from "./serviceWorker";
 import { Route, BrowserRouter as Router } from "react-router-dom";
 

@@ -1,5 +1,4 @@
 import React from "react";
-import "./Header.scss";
 
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -33,7 +32,7 @@ function Header() {
           <Typography variant="h6" noWrap>
             Q3 2019-20
           </Typography>
-          <Typography variant="caption" noWrap align="cemter">
+          <Typography variant="caption" noWrap align="center">
             1-Jan to 30-Dec
           </Typography>
         </Toolbar>

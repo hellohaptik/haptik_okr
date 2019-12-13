@@ -1,12 +1,20 @@
 import React from "react";
-import TableContainer from "../../components/TableContainer";
+import "./Overview.scss";
 import Header from "../../components/Header";
+import TeamItem from "./TeamItem";
 
 function Overview() {
   return (
     <div>
       <Header></Header>
-      <TableContainer></TableContainer>
+      <div className="tableContainer">
+        <TeamItem></TeamItem>
+        <TeamItem></TeamItem>
+        <TeamItem></TeamItem>
+        <TeamItem></TeamItem>
+        <TeamItem></TeamItem>
+        <TeamItem></TeamItem>
+      </div>
     </div>
   );
 }

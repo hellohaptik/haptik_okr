@@ -5,16 +5,21 @@ import * as serviceWorker from "./serviceWorker";
 import LoginView from "./containers/LoginView";
 import SignupView from "./containers/SignupView";
 import Overview from "./containers/Overview";
-import Header from "./components/Header";
 
 import { Route, BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 import blueGrey from "@material-ui/core/colors/blueGrey";
+import { fontWeight } from "@material-ui/system";
 
 const theme = createMuiTheme({
   palette: {
     primary: blueGrey
+  },
+  typography: {
+    h6: {
+      fontSize: 16
+    }
   }
 });
 

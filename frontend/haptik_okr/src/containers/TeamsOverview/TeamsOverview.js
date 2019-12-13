@@ -1,9 +1,9 @@
 import React from "react";
-import "./Overview.scss";
+import "./TeamsOverview.scss";
 import Header from "../../components/Header";
 import TeamItem from "./TeamItem";
 
-function Overview() {
+function TeamsOverview() {
   return (
     <div>
       <Header></Header>
@@ -19,4 +19,4 @@ function Overview() {
   );
 }
 
-export default Overview;
+export default TeamsOverview;

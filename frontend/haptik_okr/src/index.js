@@ -4,7 +4,7 @@ import * as serviceWorker from "./serviceWorker";
 
 import LoginView from "./containers/LoginView";
 import SignupView from "./containers/SignupView";
-import OverView from "./containers/Overview";
+import Overview from "./containers/Overview";
 import Header from "./components/Header";
 
 import { Route, BrowserRouter as Router } from "react-router-dom";
@@ -22,7 +22,7 @@ const routing = (
   <ThemeProvider theme={theme}>
     <Router>
       <div>
-        <Route exact path="/" component={OverView} />
+        <Route exact path="/" component={Overview} />
         <Route exact path="/registration" component={SignupView} />
       </div>
     </Router>

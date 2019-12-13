@@ -1,12 +1,12 @@
 import React from "react";
-import "./Overview.scss";
+import TableContainer from "../../components/TableContainer";
 import Header from "../../components/Header";
 
 function Overview() {
   return (
     <div>
       <Header></Header>
-      <div className="overviewContainer">Hey</div>
+      <TableContainer></TableContainer>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
 import "./TeamItem.scss";
-import GroupIcon from "@material-ui/icons/Group";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 function TeamItem() {
@@ -11,7 +10,6 @@ function TeamItem() {
         <Typography variant="h6" noWrap>
           Mobile Team
         </Typography>
-        {/* <GroupIcon /> */}
       </div>
       <div className="teamItem-column rhs">
         <Typography variant="subtitle2" noWrap>

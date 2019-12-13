@@ -1,10 +1,10 @@
 import React from "react";
-
+import Moment from "moment";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import MoreIcon from "@material-ui/icons/MoreVert";
 
 const useStyles = makeStyles(theme => ({
@@ -22,7 +22,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Header() {
+function getQuarterMonths(quarterInfo) {
+  return (
+    Moment.unix(quarterInfo.quarter_start_date).format("DD-MMM") +
+    " to " +
+    Moment.unix(quarterInfo.quarter_end_date).format("DD-MMM")
+  );
+}
+
+function Header({ quarterInfo }) {
   const classes = useStyles();
 
   return (
@@ -30,10 +38,10 @@ function Header() {
       <AppBar position="static" className={classes.appbar}>
         <Toolbar className={classes.toolbar_lhs}>
           <Typography variant="h5" noWrap>
-            Q3 2019-20
+            {quarterInfo.name}
           </Typography>
           <Typography variant="caption" noWrap align="center">
-            1-Jan to 30-Dec
+            {getQuarterMonths(quarterInfo)}
           </Typography>
         </Toolbar>
         <Toolbar edge="end">
@@ -52,5 +60,15 @@ function Header() {
     </div>
   );
 }
+
+Header.defaultProps = {
+  quarterInfo: {
+    id: 1,
+    name: "Q4 2019-20",
+    quarter_start_date: 1569888000000,
+    quarter_end_date: 1869888000000,
+    is_current: true
+  }
+};
 
 export default Header;

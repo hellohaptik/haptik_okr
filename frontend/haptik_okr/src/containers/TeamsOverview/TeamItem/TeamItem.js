@@ -1,27 +1,60 @@
 import React from "react";
-import Typography from "@material-ui/core/Typography";
 import "./TeamItem.scss";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-function TeamItem() {
+const useStylesProgress = makeStyles({
+  root: {
+    position: "relative",
+    marginLeft: 12
+  },
+  top: {
+    color: "#eeeeee"
+  },
+  bottom: {
+    color: "primary",
+    position: "absolute",
+    left: 0
+  }
+});
+
+function BorderCircularProgress(props) {
+  const classes = useStylesProgress();
+
+  return (
+    <div className={classes.root}>
+      <CircularProgress
+        variant="static"
+        className={classes.top}
+        size={22}
+        value={100}
+        thickness={4}
+      />
+      <CircularProgress
+        variant="static"
+        className={classes.bottom}
+        size={22}
+        thickness={4}
+        {...props}
+      />
+    </div>
+  );
+}
+
+function TeamItem({ team }) {
   return (
     <div className="teamItem">
       <div className="teamItem-column lhs">
         <Typography variant="h6" noWrap>
-          Mobile Team
+          {team.team_name}
         </Typography>
       </div>
       <div className="teamItem-column rhs">
         <Typography variant="subtitle2" noWrap>
-          0%
+          {team.team_progress}%
         </Typography>
-        <CircularProgress
-          className="teamItem-column-progress"
-          variant="static"
-          size={22}
-          thickness={4.0}
-          value={75}
-        />
+        <BorderCircularProgress value={team.team_progress} />
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ function Header() {
     <div className={classes.root}>
       <AppBar position="static" className={classes.appbar}>
         <Toolbar className={classes.toolbar_lhs}>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h5" noWrap>
             Q3 2019-20
           </Typography>
           <Typography variant="caption" noWrap align="center">

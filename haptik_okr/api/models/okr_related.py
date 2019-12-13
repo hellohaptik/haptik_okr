@@ -25,6 +25,7 @@ class Objective(models.Model):
     title = models.CharField(max_length=500, null=False)
     quarter_sheet = models.ForeignKey(Sheet, on_delete=models.PROTECT)
     progress = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    is_discarded = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
@@ -33,5 +34,6 @@ class KeyResults(models.Model):
     title = models.CharField(max_length=500, null=False)
     objective = models.ForeignKey(Objective, on_delete=models.PROTECT)
     progress = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    is_discarded = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)

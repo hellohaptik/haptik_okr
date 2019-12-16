@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 def populate_response_data(objective):
-    api_response = {'objective': None}
+    api_response = {}
     data = {
         'id': objective.id,
         'sheet_id': objective.quarter_sheet_id,

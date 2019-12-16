@@ -13,7 +13,7 @@ from api.constants import INVALID_REQUEST
 
 # TODO: check if we can write a util method to populate data given a dict of keys and corresponding objects
 def populate_keyresults_data(keyresult):
-    api_response = {'keyresult': None}
+    api_response = {}
     data = {
         'id': keyresult.id,
         'title': keyresult.title,
@@ -30,10 +30,10 @@ class KeyResultsView(generics.CreateAPIView):
     @method_decorator(send_api_response)
     def post(self, request, *args, **kwargs):
         # TODO: check if user can create the task based on the information in header
+        request_body = json.loads(request.body)
         valid, response = validate_request_parameters(request, ['objective_id', 'title'])
         if valid:
             try:
-                request_body = json.loads(request.body)
                 objective_id = int(request_body.get('objective_id'))
                 title = str(request_body.get('title'))
                 objective = Objective.objects.get(pk=objective_id)
@@ -46,39 +46,32 @@ class KeyResultsView(generics.CreateAPIView):
 
 class KeyResultsDetailsView(APIView):
 
-    def put(self, request):
+    @send_api_response
+    def put(self, request, keyresult_id):
         # TODO: check if user can create the task based on the information in header
-        valid, response = validate_request_parameters(request, ['keyresult_id'])
-        if valid:
-            try:
-                request_body = json.loads(request.body)
-                keyresult_id = int(request_body.get('keyresult_id'))
-                title = str(request_body.get('title'))
-                progress = int(request_body.get('progress'))
-                keyresult = KeyResults.objects.get(pk=keyresult_id)
-                if title:
-                    keyresult.title = title
-                if progress:
-                    keyresult.progress = progress
-                keyresult.save()
-                return populate_keyresults_data(keyresult)
-            except (ValueError, KeyResults.DoesNotExist) as e:
-                raise APIError(message=INVALID_REQUEST, status=400)
-        else:
-            raise APIError(message=response, status=400)
+        request_body = json.loads(request.body)
+        try:
+            keyresult_id = int(keyresult_id)
+            title = str(request_body.get('title'))
+            progress = int(request_body.get('progress'))
+            keyresult = KeyResults.objects.get(pk=keyresult_id)
+            if title:
+                keyresult.title = title
+            if progress:
+                keyresult.progress = progress
+            keyresult.save()
+            return populate_keyresults_data(keyresult)
+        except (ValueError, KeyResults.DoesNotExist, TypeError) as e:
+            raise APIError(message=INVALID_REQUEST, status=400)
 
-    def delete(self, request):
+    @send_api_response
+    def delete(self, request, keyresult_id):
         # TODO: check if user can create the task based on the information in header
-        valid, response = validate_request_parameters(request, ['keyresult_id'])
-        if valid:
-            try:
-                request_body = json.loads(request.body)
-                keyresult_id = int(request_body.get('keyresult_id'))
-                keyresult = KeyResults.objects.get(pk=keyresult_id)
-                keyresult.is_discarded = True
-                keyresult.save()
-                return 'Keyresult successfully discarded'
-            except (ValueError, KeyResults.DoesNotExist) as e:
-                raise APIError(message=INVALID_REQUEST, status=400)
-        else:
-            raise APIError(message=response, status=400)
+        try:
+            keyresult_id = int(keyresult_id)
+            keyresult = KeyResults.objects.get(pk=keyresult_id)
+            keyresult.is_discarded = True
+            keyresult.save()
+            return 'Keyresult successfully discarded'
+        except (ValueError, KeyResults.DoesNotExist) as e:
+            raise APIError(message=INVALID_REQUEST, status=400)

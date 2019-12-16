@@ -10,7 +10,6 @@ import { Route, BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 import blueGrey from "@material-ui/core/colors/blueGrey";
-import { fontWeight } from "@material-ui/system";
 
 const theme = createMuiTheme({
   palette: {

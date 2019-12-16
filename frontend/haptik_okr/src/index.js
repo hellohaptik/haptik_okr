@@ -1,17 +1,40 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import * as serviceWorker from "./serviceWorker";
+
 import LoginView from "./containers/LoginView";
 import SignupView from "./containers/SignupView";
-import * as serviceWorker from "./serviceWorker";
+import TeamsOverview from "./containers/TeamsOverview";
+
 import { Route, BrowserRouter as Router } from "react-router-dom";
+import { ThemeProvider } from "@material-ui/core/styles";
+import { createMuiTheme } from "@material-ui/core/styles";
+import blueGrey from "@material-ui/core/colors/blueGrey";
+import { fontWeight } from "@material-ui/system";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: blueGrey
+  },
+  typography: {
+    h6: {
+      fontSize: 16
+    },
+    h5: {
+      fontSize: 20
+    }
+  }
+});
 
 const routing = (
-  <Router>
-    <div>
-      <Route exact path="/" component={LoginView} />
-      <Route exact path="/registration" component={SignupView} />
-    </div>
-  </Router>
+  <ThemeProvider theme={theme}>
+    <Router>
+      <div>
+        <Route exact path="/" component={TeamsOverview} />
+        <Route exact path="/registration" component={SignupView} />
+      </div>
+    </Router>
+  </ThemeProvider>
 );
 
 ReactDOM.render(routing, document.getElementById("root"));

@@ -5,6 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 import LoginView from "./containers/LoginView";
 import SignupView from "./containers/SignupView";
 import TeamsOverview from "./containers/TeamsOverview";
+import SheetDetails from "./containers/SheetDetails";
 
 import { Route, BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
@@ -31,6 +32,7 @@ const routing = (
       <div>
         <Route exact path="/" component={TeamsOverview} />
         <Route exact path="/registration" component={SignupView} />
+        <Route exact path="/sheetdetails" component={SheetDetails} />
       </div>
     </Router>
   </ThemeProvider>

@@ -40,7 +40,7 @@ function OkrRowView(props) {
         <TableCell align="left">
           <Slider
             defaultValue={progress}
-            step={1}
+            step={10}
             onChange={handleProgressChange}
           />
         </TableCell>

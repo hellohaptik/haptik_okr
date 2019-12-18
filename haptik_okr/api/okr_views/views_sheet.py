@@ -11,7 +11,7 @@ class SheetView(APIView):
     @method_decorator(send_api_response)
     def get(self, request):
         request_params = request.query_params.dict()
-        response = {'objectives': []}
+        response = {}
         okrs = []
         if len(request_params) > 0:
             try:
@@ -26,7 +26,8 @@ class SheetView(APIView):
                             keyresult = {
                                 'id': kr.id,
                                 'title': kr.title,
-                                'progress': kr.progress
+                                'progress': kr.progress,
+                                'is_discarded': kr.is_discarded
                             }
                             krs.append(keyresult)
                         objective = {

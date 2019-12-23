@@ -44,3 +44,10 @@ class SheetView(APIView):
                 raise APIError(message="Invalid id", status=400)
         else:
             raise APIError(message=api.constants.INVALID_REQUEST, status=400)
+
+
+class SheetDetailView(APIView):
+
+    @method_decorator(send_api_response)
+    def put(self, request, sheet_id):
+        pass

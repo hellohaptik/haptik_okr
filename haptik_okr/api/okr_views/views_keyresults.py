@@ -64,6 +64,7 @@ class KeyResultsDetailsView(APIView):
     def put(self, request, keyresult_id):
         # TODO: check if user can create the task based on the information in header
         request_body = json.loads(request.body)
+        progress_updated = False
         try:
             keyresult_id = int(keyresult_id)
             title = str(request_body.get('title'))
@@ -74,10 +75,12 @@ class KeyResultsDetailsView(APIView):
             if progress:
                 if 0 <= progress <= 100:
                     keyresult.progress = progress
-                    self.update_sheet_progress(keyresult.objective_id)
+                    progress_updated = True
                 else:
                     raise APIError(message='Invalid data', status=400)
             keyresult.save()
+            if progress_updated:
+                self.update_sheet_progress(keyresult.objective_id)
             response = populate_keyresults_data(keyresult)
             return response
         except (ValueError, KeyResults.DoesNotExist, TypeError) as e:

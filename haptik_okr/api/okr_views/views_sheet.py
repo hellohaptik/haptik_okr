@@ -2,14 +2,17 @@ from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from api.exceptions import APIError
 import api.constants
-from api.models.okr_related import Objective, KeyResults
+from api.models.okr_related import Objective, KeyResults, Sheet
 from api.okr_decorators import send_api_response
 import json
+from django.db.models import Avg
+import math
 
 
 def get_sheet_details(sheet_id):
     response = {}
     okrs = []
+    sheet = Sheet.objects.get(pk=sheet_id)
     objective_list = Objective.objects.filter(quarter_sheet_id=sheet_id)
     objective_id_list = [objective.id for objective in objective_list]
     keyresults_list = KeyResults.objects.filter(objective__id__in=objective_id_list)
@@ -30,6 +33,7 @@ def get_sheet_details(sheet_id):
             'keyresults': krs}
         okrs.append(objective)
         response['objectives'] = okrs
+        response['sheet_progress'] = sheet.progress
     return response
 
 
@@ -73,7 +77,8 @@ class SheetDetailView(APIView):
                                                                                       db_objective_id_list,
                                                                                       db_keyresults_list)
                 if valid_objectives_keyresults:
-                    self.update_objectives_and_keyresults(req_objective_list, db_objective_list, db_keyresults_list)
+                    self.update_objectives_and_keyresults(req_objective_list, db_objective_list, db_keyresults_list,
+                                                          s_id)
                     return get_sheet_details(s_id)
                 else:
                     raise APIError(message="Invalid data", status=400)
@@ -96,9 +101,21 @@ class SheetDetailView(APIView):
                 for req_obj_keyresult in req_obj_keyresults:
                     if req_obj_keyresult.get('id') not in obj_keyresults_ids:
                         return False
+                    else:
+                        try:
+                            # if progress is not an integer, it will throw a type error, which indicates data is invalid
+                            # if progress key is not present, validations will not run, but data is valid
+                            keyresult_progress = int(req_obj_keyresult.get('progress'))
+                            if not 0 <= keyresult_progress <= 100:
+                                return False
+                        except ValueError as e:
+                            return False
+                        except KeyError as e:
+                            pass
+
         return True
 
-    def update_objectives_and_keyresults(self, req_objective_list, db_objective_list, db_keyresults_list):
+    def update_objectives_and_keyresults(self, req_objective_list, db_objective_list, db_keyresults_list, sheet_id):
         for req_objective in req_objective_list:
 
             # update the objective object
@@ -116,3 +133,22 @@ class SheetDetailView(APIView):
                 db_keyresult.progress = req_keyresult.get('progress')
                 db_keyresult.objective = db_objective
                 db_keyresult.save()
+
+            # update the progress for objective
+            # querying keyresults again to ensure updated data is retrieved while saving progress for objective
+            obj_progress = KeyResults.objects.filter(objective_id=db_objective.id).aggregate(progress=Avg('progress'))
+            if obj_progress.get('progress') is not None:
+                db_objective.progress = math.floor(obj_progress.get('progress'))
+            else:
+                db_objective.progress = 0
+            db_objective.save()
+
+        # update progress for sheet
+        sheet = Sheet.objects.get(pk=sheet_id)
+        # querying objectives again to ensure updated data is retrieved while saving progress for sheet
+        sheet_progress = Objective.objects.filter(quarter_sheet_id=sheet_id).aggregate(progress=Avg('progress'))
+        if sheet_progress.get('progress') is not None:
+            sheet.progress = math.floor(sheet_progress.get('progress'))
+        else:
+            sheet.progress = 0
+        sheet.save()

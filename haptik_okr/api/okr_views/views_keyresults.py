@@ -6,13 +6,16 @@ from api.okr_decorators import send_api_response
 import json
 
 from api.utils import validate_request_parameters
-from api.models.okr_related import Objective, KeyResults
+from api.models.okr_related import Objective, KeyResults, Sheet
 from api.exceptions import APIError
 from api.constants import INVALID_REQUEST
+from django.db.models import Avg
+import math
 
 
 # TODO: check if we can write a util method to populate data given a dict of keys and corresponding objects
 def populate_keyresults_data(keyresult):
+    sheet_progress, objective_progress = get_sheet_and_objective_progress(keyresult)
     api_response = {}
     data = {
         'id': keyresult.id,
@@ -22,7 +25,18 @@ def populate_keyresults_data(keyresult):
         'objective_id': keyresult.objective_id
     }
     api_response['keyresult'] = data
+    api_response['objective_progress'] = objective_progress
+    api_response['sheet_progress'] = sheet_progress
     return api_response
+
+
+def get_sheet_and_objective_progress(keyresult):
+    if keyresult is not None:
+        objective_id = keyresult.objective_id
+        objective = Objective.objects.get(pk=objective_id)
+        sheet_id = objective.quarter_sheet_id
+        sheet = Sheet.objects.get(pk=sheet_id)
+        return sheet.progress, objective.progress
 
 
 class KeyResultsView(generics.CreateAPIView):
@@ -58,9 +72,14 @@ class KeyResultsDetailsView(APIView):
             if title:
                 keyresult.title = title
             if progress:
-                keyresult.progress = progress
+                if 0 <= progress <= 100:
+                    keyresult.progress = progress
+                    self.update_sheet_progress(keyresult.objective_id)
+                else:
+                    raise APIError(message='Invalid data', status=400)
             keyresult.save()
-            return populate_keyresults_data(keyresult)
+            response = populate_keyresults_data(keyresult)
+            return response
         except (ValueError, KeyResults.DoesNotExist, TypeError) as e:
             raise APIError(message=INVALID_REQUEST, status=400)
 
@@ -75,3 +94,16 @@ class KeyResultsDetailsView(APIView):
             return 'Keyresult successfully discarded'
         except (ValueError, KeyResults.DoesNotExist) as e:
             raise APIError(message=INVALID_REQUEST, status=400)
+
+    def update_sheet_progress(self, objective_id):
+        objective = Objective.objects.get(pk=objective_id)
+        progress = KeyResults.objects.filter(objective_id=objective_id).aggregate(
+            obj_progress=Avg('progress'))
+        objective.progress = math.floor(progress.get('obj_progress'))
+        objective.save()
+
+        sheet_id = objective.quarter_sheet.id
+        sheet = Sheet.objects.get(pk=sheet_id)
+        sheet_progress = Objective.objects.filter(quarter_sheet_id=sheet_id).aggregate(sheet_progress=Avg('progress'))
+        sheet.progress = math.floor(sheet_progress.get('sheet_progress'))
+        sheet.save()

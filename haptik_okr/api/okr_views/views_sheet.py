@@ -136,7 +136,8 @@ class SheetDetailView(APIView):
 
             # update the progress for objective
             # querying keyresults again to ensure updated data is retrieved while saving progress for objective
-            obj_progress = KeyResults.objects.filter(objective_id=db_objective.id).aggregate(progress=Avg('progress'))
+            obj_progress = KeyResults.objects.filter(objective_id=db_objective.id, is_discarded=False).aggregate(
+                progress=Avg('progress'))
             if obj_progress.get('progress') is not None:
                 db_objective.progress = math.floor(obj_progress.get('progress'))
             else:
@@ -146,7 +147,8 @@ class SheetDetailView(APIView):
         # update progress for sheet
         sheet = Sheet.objects.get(pk=sheet_id)
         # querying objectives again to ensure updated data is retrieved while saving progress for sheet
-        sheet_progress = Objective.objects.filter(quarter_sheet_id=sheet_id).aggregate(progress=Avg('progress'))
+        sheet_progress = Objective.objects.filter(quarter_sheet_id=sheet_id, is_discarded=False).aggregate(
+            progress=Avg('progress'))
         if sheet_progress.get('progress') is not None:
             sheet.progress = math.floor(sheet_progress.get('progress'))
         else:

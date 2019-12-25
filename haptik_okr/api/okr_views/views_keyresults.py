@@ -100,7 +100,7 @@ class KeyResultsDetailsView(APIView):
 
     def update_sheet_progress(self, objective_id):
         objective = Objective.objects.get(pk=objective_id)
-        progress = KeyResults.objects.filter(objective_id=objective_id).aggregate(
+        progress = KeyResults.objects.filter(objective_id=objective_id, is_discarded=False).aggregate(
             obj_progress=Avg('progress'))
         objective.progress = math.floor(progress.get('obj_progress'))
         objective.save()

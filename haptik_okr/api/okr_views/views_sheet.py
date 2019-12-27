@@ -9,6 +9,8 @@ from django.db.models import Avg
 import math
 
 
+PROGRESS = 'progress'
+
 def get_sheet_details(sheet_id):
     response = {}
     okrs = []
@@ -105,7 +107,7 @@ class SheetDetailView(APIView):
                         try:
                             # if progress is not an integer, it will throw a type error, which indicates data is invalid
                             # if progress key is not present, validations will not run, but data is valid
-                            keyresult_progress = int(req_obj_keyresult.get('progress'))
+                            keyresult_progress = int(req_obj_keyresult.get(PROGRESS))
                             if not 0 <= keyresult_progress <= 100:
                                 return False
                         except ValueError as e:
@@ -130,16 +132,16 @@ class SheetDetailView(APIView):
 
                 # update the data for db keyresult
                 db_keyresult.title = req_keyresult.get('title')
-                db_keyresult.progress = req_keyresult.get('progress')
+                db_keyresult.progress = req_keyresult.get(PROGRESS)
                 db_keyresult.objective = db_objective
                 db_keyresult.save()
 
             # update the progress for objective
             # querying keyresults again to ensure updated data is retrieved while saving progress for objective
             obj_progress = KeyResults.objects.filter(objective_id=db_objective.id, is_discarded=False).aggregate(
-                progress=Avg('progress'))
-            if obj_progress.get('progress') is not None:
-                db_objective.progress = math.floor(obj_progress.get('progress'))
+                progress=Avg(PROGRESS))
+            if obj_progress.get(PROGRESS) is not None:
+                db_objective.progress = math.floor(obj_progress.get(PROGRESS))
             else:
                 db_objective.progress = 0
             db_objective.save()
@@ -148,9 +150,9 @@ class SheetDetailView(APIView):
         sheet = Sheet.objects.get(pk=sheet_id)
         # querying objectives again to ensure updated data is retrieved while saving progress for sheet
         sheet_progress = Objective.objects.filter(quarter_sheet_id=sheet_id, is_discarded=False).aggregate(
-            progress=Avg('progress'))
-        if sheet_progress.get('progress') is not None:
-            sheet.progress = math.floor(sheet_progress.get('progress'))
+            progress=Avg(PROGRESS))
+        if sheet_progress.get(PROGRESS) is not None:
+            sheet.progress = math.floor(sheet_progress.get(PROGRESS))
         else:
             sheet.progress = 0
         sheet.save()

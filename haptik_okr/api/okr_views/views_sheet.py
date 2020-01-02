@@ -3,13 +3,15 @@ from rest_framework.views import APIView
 from api.exceptions import APIError
 import api.constants
 from api.models.okr_related import Objective, KeyResults, Sheet
-from api.okr_decorators import send_api_response
+from api.okr_decorators import send_api_response, authenticate_user
+from api.okr_encryption import decrypt_user_id
+from api.utils import get_user_auth_token, check_user_permission
 import json
 from django.db.models import Avg
 import math
 
-
 PROGRESS = 'progress'
+
 
 def get_sheet_details(sheet_id):
     response = {}
@@ -40,6 +42,7 @@ def get_sheet_details(sheet_id):
 
 
 class SheetView(APIView):
+    @method_decorator(authenticate_user)
     @method_decorator(send_api_response)
     def get(self, request):
         request_params = request.query_params.dict()
@@ -57,12 +60,17 @@ class SheetView(APIView):
 
 
 class SheetDetailView(APIView):
-
+    @method_decorator(authenticate_user)
     @method_decorator(send_api_response)
     def put(self, request, sheet_id):
         try:
             # cast the sheet_id to int else raise an exception
             s_id = int(sheet_id)
+
+            # check if the user allowed to make a put call
+            request_permitted = check_user_permission(request, s_id)
+            if not request_permitted:
+                raise APIError(message="Unauthorized request", status=401)
 
             # get objectives and keyresults data from db for validations
             db_objective_list = Objective.objects.filter(quarter_sheet_id=s_id)

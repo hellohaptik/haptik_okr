@@ -2,6 +2,10 @@ import secrets
 import string
 
 from django.contrib.auth import authenticate
+from api.models.okr_related import Sheet
+from api.models.user_related import Team
+from django.contrib.auth.models import User
+from api.okr_encryption import decrypt_user_id
 
 
 def validate_request_parameters(request, list_of_required_params):
@@ -46,3 +50,34 @@ def generate_random_string_token(length):
     :return: alpha-numeric string
     """
     return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for i in range(length))
+
+
+def check_user_permission(request, sheet_id):
+    """
+    This method returns if the user is the head of the team, whose sheet is being accessed
+
+    :param request: request fired by the user
+    :param sheet_id: id of the sheet being accessed by the user
+
+    :return: true if the user is the head of the team, false other wise
+    """
+    valid, data = get_user_auth_token(request)
+    user_name = decrypt_user_id(data)
+    if valid:
+        user = User.objects.get(username=user_name)
+        sheet = Sheet.objects.get(pk=sheet_id)
+        team = Team.objects.get(pk=sheet.team_id_id)
+        return user.id == team.head_id
+    else:
+        return False
+
+
+def get_user_auth_token(request):
+    try:
+        token = request.META['HTTP_AUTHORIZATION']
+        if token:
+            return True, token
+        else:
+            return False, "Authorization token missing"
+    except KeyError as e:
+        return False, "Unauthorized request"

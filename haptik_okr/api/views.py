@@ -12,8 +12,12 @@ from django.utils.decorators import method_decorator
 from rest_framework import generics
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from api.okr_encryption import encrypt_user_id
 
 INVALID_EMAIL_MESSAGE = 'Please enter valid email id'
+
+api_response = {}
+data = {}
 
 
 class LoginView(generics.CreateAPIView):
@@ -22,9 +26,6 @@ class LoginView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
-        api_response = {'user': None, 'token': ''}
-        data = {'username': None}
-
         valid, response = validate_request_parameters(request, ['username', 'password'])
         if valid:
             try:
@@ -35,6 +36,7 @@ class LoginView(generics.CreateAPIView):
             if authenticated:
                 data['username'] = user_obj.username
                 api_response['user'] = data
+                api_response['token'] = encrypt_user_id(user_obj.username)
                 return api_response
             else:
                 raise APIError(message="Invalid credentials", status=401)
@@ -49,8 +51,6 @@ class SignupView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", "")
         password = request.data.get("password", "")
-        api_response = {'user': None, 'token': ''}
-        data = {'username': None}
         valid, response = validate_request_parameters(request, ['username', 'password'])
         if valid:
             try:
@@ -65,6 +65,7 @@ class SignupView(generics.CreateAPIView):
                     user_obj.save()
                     data['username'] = user_obj.username
                     api_response['user'] = data
+                    api_response['token'] = encrypt_user_id(user_obj.username)
                     return api_response
                 else:
                     raise APIError(message="Failed to create user", status=500)

@@ -1,3 +1,4 @@
 INVALID_REQUEST = 'Invalid request'
+UNAUTHORIZED_REQUEST = 'Unauthorized request'
 
 RESET_PASSWORD_TOKEN_EXPIRY_IN_MINS = 10

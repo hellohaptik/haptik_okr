@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from api.models.okr_related import Quarter, Sheet, Team
-from api.okr_decorators import send_api_response
+from api.okr_decorators import send_api_response, authenticate_user
 from api.exceptions import APIError
 import datetime
 import api.constants
@@ -23,10 +23,10 @@ def populate_quarter_data(quarter_list):
     return response
 
 
-@api_view()
+@api_view(['GET'])
+@authenticate_user
 @send_api_response
 def get_all_or_current_quarter(request):
-    quarter_list = []
     request_params = request.query_params.dict()
     if len(request_params) > 0:
         try:
@@ -48,7 +48,8 @@ def get_all_or_current_quarter(request):
     return populate_quarter_data(quarter_list)
 
 
-@api_view()
+@api_view(['GET'])
+@authenticate_user
 @send_api_response
 def get_quarter_by_id(request, quarter_id):
     try:
@@ -63,7 +64,8 @@ def get_quarter_by_id(request, quarter_id):
         raise APIError(message='Quarter id should be an integer', status=400)
 
 
-@api_view()
+@api_view(['GET'])
+@authenticate_user
 @send_api_response
 def get_team_list_for_quarter_id(request, quarter_id):
     response = {'teams_progress': None}

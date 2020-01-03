@@ -1,0 +1,65 @@
+{
+    "success": true,
+    "body": {
+        "objectives": [
+            {
+                "id": 1,
+                "title": "Provide a better experience for end users",
+                "progress": 55,
+                "keyresults": [
+                    {
+                        "id": 1,
+                        "title": "Offline Bot Support for HelloJio(3 use cases)",
+                        "progress": 90
+                    },
+                    {
+                        "id": 2,
+                        "title": "Analytics for offline messages",
+                        "progress": 35
+                    },
+                    {
+                        "id": 3,
+                        "title": "Add support for feedback functionality to get user feedback",
+                        "progress": 70
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "title": "Reduce integration time and effort for customers for native SDKs",
+                "progress": 80,
+                "keyresults": [
+                    {
+                        "id": 3,
+                        "title": "Improve documentation which helps in faster integration(include troubleshooting as well)",
+                        "progress": 100
+                    },
+                    {
+                        "id": 4,
+                        "title": "Research if we can blast of Push Notifications to Client Specific Users using a UI or a CSV",
+                        "progress": 70
+                    }
+                    ,
+                    {
+                        "id": 4,
+                        "title": "Reduce 2 steps from iOS SDK Integration",
+                        "progress": 55
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "title": "Objective 3",
+                "progress": 20,
+                "keyresults": [
+                    {
+                        "id": 3,
+                        "title": "Add support for feedback functionality to get user feedback",
+                        "progress": 20
+                    }
+                ]
+            }
+        ]
+    },
+    "error": ""
+}

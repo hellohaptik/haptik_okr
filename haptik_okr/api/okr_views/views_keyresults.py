@@ -67,8 +67,8 @@ class KeyResultsView(generics.CreateAPIView):
 
 
 class KeyResultsDetailsView(APIView):
-    @authenticate_user
-    @send_api_response
+    @method_decorator(authenticate_user)
+    @method_decorator(send_api_response)
     def put(self, request, keyresult_id):
         # TODO: check if user can create the task based on the information in header
         request_body = json.loads(request.body)
@@ -95,8 +95,8 @@ class KeyResultsDetailsView(APIView):
         except (ValueError, KeyResults.DoesNotExist, TypeError) as e:
             raise APIError(message=INVALID_REQUEST, status=400)
 
-    @authenticate_user
-    @send_api_response
+    @method_decorator(authenticate_user)
+    @method_decorator(send_api_response)
     def delete(self, request, keyresult_id):
         try:
             keyresult_id = int(keyresult_id)

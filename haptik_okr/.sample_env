@@ -1,0 +1,9 @@
+#Environment variables used by MYSQL Image and Django container.
+MYSQL_DATABASE=OKR_DATABASE
+MYSQL_USER=OKR_DB_USERNAME
+MYSQL_PASSWORD=OKR_USER_PASSWORD
+MYSQL_ROOT_PASSWORD=ROOT_PASSWORD
+
+# Default host is the mysql container name.
+MYSQL_HOST=mysql
+MYSQL_PORT=3306

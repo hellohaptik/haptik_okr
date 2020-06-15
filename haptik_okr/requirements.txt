@@ -1,4 +1,4 @@
-Crypto
+pycrypto==2.6.1
 Django==2.2.5
 djangorestframework==3.10.3
 mysqlclient==1.4.6

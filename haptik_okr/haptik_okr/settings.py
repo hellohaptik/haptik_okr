@@ -26,6 +26,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SQL_DB_NAME = os.environ.get('MYSQL_DATABASE')
+SQL_DB_USER = os.environ.get('MYSQL_USER')
+SQL_DB_PASSWORD = os.environ.get('MYSQL_PASSWORD')
+SQL_DB_HOST = os.environ.get('MYSQL_HOST')
+SQL_DB_PORT = os.environ.get('MYSQL_PORT')
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -82,9 +88,13 @@ WSGI_APPLICATION = 'haptik_okr.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/usr/local/etc/myokr.cnf',
-        },
+        'NAME': SQL_DB_NAME,  # Or path to database file if using sqlite3.
+        'USER': SQL_DB_USER,
+        'PASSWORD': SQL_DB_PASSWORD,
+        'HOST': SQL_DB_HOST,
+        'PORT': SQL_DB_PORT,
+        'CONN_MAX_AGE': 300,
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 

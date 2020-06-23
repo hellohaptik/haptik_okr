@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - '3306'
+    
+    env_file:
+     - ./haptik_okr/.env
+
+  server:
+    build: ./haptik_okr
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./haptik_okr:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    env_file:
+      - ./haptik_okr/.env
+  
+  frontend:
+    build: ./frontend/haptik_okr
+    command: yarn start
+    volumes:
+        - ./frontend/haptik_okr/public:/app/public
+        - ./frontend/haptik_okr/src:/app/src  
+    ports:
+      - "3000:3000"
